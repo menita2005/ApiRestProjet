@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use App\Models\Producto;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,143 +9,145 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductoController extends Controller
 {
+    public function index()
+    {
+        // Cargar relaciones 'categoria' y 'proveedor'
+        $productos = Producto::with(['categoria', 'proveedor'])->get();
 
-        public function index(){
-
-            $productos = Producto::all();
-
-            if ($productos->isEmpty()) {
-                return response()->json(['message' =>'No hay productos '],404);
-                # code...
-            }
-            else
-            return  response()->json($productos, 200);
+        if ($productos->isEmpty()) {
+            return response()->json(['message' => 'No hay productos'], 404);
+        } else {
+            return response()->json($productos, 200);
         }
-
-        // public function create(){
-        //     return view('Productos.create');
-        // }
-        public function store(request $request){
-
-            $validator = validator::make($request->all(),[
-
-                'NombreP' => 'required',
-                'Descripcion'  => 'required',
-                'Precio' => 'required',
-                'stock' => 'required'
-            ]);
-            if ($validator->fails()){
-                $data = [
-                    'message' => 'Error en la validacion de los datos',
-                    'error'  => $validator->errors(),
-                    'status' => 400
-                ];
-
-                return response()->json($data,400);
-            }
-            $producto = Producto::create([
-                'NombreP'=> $request->NombreP,
-            'Descripcion'=> $request->Descripcion,
-            'Precio'=> $request->Precio,
-            'stock'=> $request->stock
-            ]);
-            if (!$producto){
-                $data = [
-                    'message' => 'error al crear el Producto ',
-                    'status' => '500'
-                ];
-                return response ()->json ($data,500);
-
-            }
-            $data = [
-                'producto' => $producto,
-                'status' => 201
-            ];
-
-            return response()->json($data,201);
-
-
-
-
-
-        }
-
-        public function Show($id){
-
-            $producto = Producto::find($id);
-
-            if(!$producto){
-                $data = [
-                    'message' => 'error al Buscar el Producto ',
-                    'status' => '404'
-                ];
-                return response()->json($data,404);
-            }
-            $data = [
-                'Producto' => $producto,
-                'status' => 201
-            ];
-
-            return response()->json($data,200);
-
-
-        }
-        public function destroy($id){
-            $producto = Producto::find($id);
-
-            if(!$producto){
-                $data = [
-                    'message' => 'error al Buscar el Producto ',
-                    'status' => '404'
-                ];
-                return response()->json($data,404);
-            }
-            $producto->delete();
-            $data = [
-                'message' => 'eliminado',
-                'status' => 201
-            ];
-            return response()->json($data,200);
-
-        }
-        public function update(Request $request,$id ){
-            $producto = Producto::find($id);
-
-            if(!$producto){
-                $data = [
-                    'message' => 'error al Buscar el Producto ',
-                    'status' => '404'
-                ];
-                return response()->json($data,404);
-            }
-            $validator = validator::make($request->all(),[
-
-                'NombreP' => 'required',
-                'Descripcion'  => 'required',
-                'Precio' => 'required',
-                'stock' => 'required'
-            ]);
-            if ($validator->fails()){
-                $data = [
-                    'message' => 'Error en la validacion de los datos',
-                    'error'  => $validator->errors(),
-                    'status' => 400
-                ];
-
-                return response()->json($data,400);
-            }
-            $producto->NombreP= $request->NombreP;
-            $producto->Descripcion= $request->Descripcion;
-            $producto->Precio= $request->Precio;
-            $producto->stock= $request->stock;
-            $producto->save();
-            $data = [
-                'message' => 'actualizado',
-                'Producto' => $producto,
-                'status' => 201
-            ];
-            return response()->json($data,200);
-        }
-
     }
+
+    public function store(Request $request)
+    {
+        // Validar los datos entrantes de la solicitud
+        $validator = Validator::make($request->all(), [
+            'NombreP' => 'required|string|max:255',
+            'Descripcion' => 'required|string',
+            'Precio' => 'required|integer',
+            'stock' => 'required|integer',
+            'categoria_id' => 'required|exists:categorias,id',
+            'proveedor_id' => 'required|exists:proveedores,id'
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de los datos',
+                'error' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
+
+        // Crear el nuevo producto usando los datos validados
+        $producto = Producto::create($validator->validated());
+
+        if (!$producto) {
+            $data = [
+                'message' => 'Error al crear el producto',
+                'status' => 500
+            ];
+            return response()->json($data, 500);
+        }
+
+        // Cargar las relaciones 'categoria' y 'proveedor' en el producto creado
+        $producto->load(['categoria', 'proveedor']);
+
+        $data = [
+            'producto' => $producto,
+            'status' => 201
+        ];
+        return response()->json($data, 201);
+    }
+
+    public function show($id)
+    {
+        // Buscar el producto por ID y cargar relaciones
+        $producto = Producto::with(['categoria', 'proveedor'])->find($id);
+
+        if (!$producto) {
+            $data = [
+                'message' => 'Error al buscar el producto',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $data = [
+            'Producto' => $producto,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function destroy($id)
+    {
+        // Buscar el producto por ID
+        $producto = Producto::find($id);
+
+        if (!$producto) {
+            $data = [
+                'message' => 'Error al buscar el producto',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $producto->delete();
+        $data = [
+            'message' => 'Producto eliminado',
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Buscar el producto por ID
+        $producto = Producto::find($id);
+
+        if (!$producto) {
+            $data = [
+                'message' => 'Error al buscar el producto',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        // Validar los datos entrantes de la solicitud
+        $validator = Validator::make($request->all(), [
+            'NombreP' => 'required|string|max:255',
+            'Descripcion' => 'required|string',
+            'Precio' => 'required|integer',
+            'stock' => 'required|integer',
+            'categoria_id' => 'required|exists:categorias,id',
+            'proveedor_id' => 'required|exists:proveedores,id'
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de los datos',
+                'error' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
+
+        // Actualizar los datos del producto
+        $producto->update($validator->validated());
+
+        // Cargar las relaciones 'categoria' y 'proveedor' en el producto actualizado
+        $producto->load(['categoria', 'proveedor']);
+
+        $data = [
+            'message' => 'Producto actualizado',
+            'Producto' => $producto,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+}
 

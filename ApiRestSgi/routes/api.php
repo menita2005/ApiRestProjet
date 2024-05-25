@@ -8,11 +8,13 @@ use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\VentaController;
 use App\Http\Controllers\Api\CompraController;
 // Producto
-Route::get('/Productos',[ProductoController::class,'index']);
-Route::get('/Productos/{id}',[ProductoController::class,'show']);
-Route::post('/Productos',[ProductoController::class,'store']);
-Route::put('/Productos/{id}',[ProductoController::class,'update']);
-Route::delete('/Productos/{id}',[ProductoController::class,'destroy']);
+
+
+Route::get('/Productos', [ProductoController::class, 'index']);
+Route::get('/Productos/{id}', [ProductoController::class, 'show']);
+Route::post('/Productos', [ProductoController::class, 'store']);
+Route::put('/Productos/{id}', [ProductoController::class, 'update']);
+Route::delete('/Productos/{id}', [ProductoController::class, 'destroy']);
 // Proveedor
 Route::get('/Proveedors',[ProveedorController::class,'index']);
 Route::get('/Proveedors/{id}',[ProveedorController::class,'show']);

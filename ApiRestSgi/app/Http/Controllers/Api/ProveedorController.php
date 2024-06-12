@@ -7,19 +7,19 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 
-class ProveedorController extends Controller
+class ProveedorController 
 {
 
     public function index(){
 
-        $proveedors = Proveedor::all();
+        $proveedores = Proveedor::all();
 
-        if ($proveedors->isEmpty()) {
+        if ($proveedores->isEmpty()) {
             return response()->json(['message' =>'No hay proveedores '],404);
             # code...
         }
         else
-        return  response()->json($proveedors, 200);
+        return  response()->json($proveedores, 200);
     }
 
     // public function create(){

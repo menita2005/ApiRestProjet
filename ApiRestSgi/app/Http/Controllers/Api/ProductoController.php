@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ProductoController extends Controller
+class ProductoController 
 {
     public function index()
     {
@@ -25,14 +25,15 @@ class ProductoController extends Controller
     {
         // Validar los datos entrantes de la solicitud
         $validator = Validator::make($request->all(), [
+            
             'NombreP' => 'required|string|max:255',
             'Descripcion' => 'required|string',
             'Precio' => 'required|integer',
             'stock' => 'required|integer',
             'categoria_id' => 'required|exists:categorias,id',
-            'proveedor_id' => 'required|exists:proveedores,id'
+            'proveedor_id' => 'required|exists:proveedors,id'
         ]);
-
+    
         if ($validator->fails()) {
             $data = [
                 'message' => 'Error en la validación de los datos',
@@ -41,10 +42,17 @@ class ProductoController extends Controller
             ];
             return response()->json($data, 400);
         }
-
+    
+        // Obtener el ID del usuario autenticado
+        $userId = auth()->id();
+    
+        // Agregar el user_id a los datos validados
+        $validatedData = $validator->validated();
+        $validatedData['user_id'] = $userId;
+    
         // Crear el nuevo producto usando los datos validados
-        $producto = Producto::create($validator->validated());
-
+        $producto = Producto::create($validatedData);
+    
         if (!$producto) {
             $data = [
                 'message' => 'Error al crear el producto',
@@ -52,17 +60,17 @@ class ProductoController extends Controller
             ];
             return response()->json($data, 500);
         }
-
+    
         // Cargar las relaciones 'categoria' y 'proveedor' en el producto creado
         $producto->load(['categoria', 'proveedor']);
-
+    
         $data = [
             'producto' => $producto,
             'status' => 201
         ];
         return response()->json($data, 201);
     }
-
+    
     public function show($id)
     {
         // Buscar el producto por ID y cargar relaciones
@@ -124,7 +132,7 @@ class ProductoController extends Controller
             'Precio' => 'required|integer',
             'stock' => 'required|integer',
             'categoria_id' => 'required|exists:categorias,id',
-            'proveedor_id' => 'required|exists:proveedores,id'
+            'proveedor_id' => 'required|exists:proveedors,id'
         ]);
 
         if ($validator->fails()) {

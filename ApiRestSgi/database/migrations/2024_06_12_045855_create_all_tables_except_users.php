@@ -57,6 +57,7 @@ class CreateAllTablesExceptUsers extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('v_compra', 10, 2);
             $table->date('f_compra');
+            $table->foreignId('proveedor_id')->constrained('proveedors')->onDelete('cascade');
             $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
             $table->integer('c_compra');
             $table->timestamps();

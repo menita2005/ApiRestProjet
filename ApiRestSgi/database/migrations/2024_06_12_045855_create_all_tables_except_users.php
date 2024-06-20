@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +12,7 @@ class CreateAllTablesExceptUsers extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('Nombre');
+            $table->boolean('status')->default(true); // Columna para indicar si está activado o desactivado
             $table->timestamps();
         });
 
@@ -24,6 +24,7 @@ class CreateAllTablesExceptUsers extends Migration
             $table->string('telefono', 15);
             $table->string('direccion');
             $table->string('correo')->unique();
+            $table->boolean('status')->default(true); // Columna para indicar si está activado o desactivado
             $table->timestamps();
         });
 
@@ -37,6 +38,7 @@ class CreateAllTablesExceptUsers extends Migration
             $table->integer('stock');
             $table->foreignId('categoria_id')->constrained('categorias')->onDelete('cascade');
             $table->foreignId('proveedor_id')->constrained('proveedors')->onDelete('cascade');
+            $table->boolean('status')->default(true); // Columna para indicar si está activado o desactivado
             $table->timestamps();
         });
 
@@ -64,13 +66,7 @@ class CreateAllTablesExceptUsers extends Migration
         });
 
         // Crear la tabla `informes`
-        Schema::create('informes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('nombre');
-            $table->text('descripcion');
-            $table->timestamps();
-        });
+       
     }
 
     public function down()

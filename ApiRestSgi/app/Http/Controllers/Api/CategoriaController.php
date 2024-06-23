@@ -25,9 +25,9 @@ class CategoriaController extends Controller
     //     return view('categorias.create');
     // }
     public function store(request $request){
+        
 
         $validator = validator::make($request->all(),[
-
             'Nombre' => 'required'
         ]);
         if ($validator->fails()){
@@ -40,8 +40,11 @@ class CategoriaController extends Controller
             return response()->json($data,400);
         }
         $categoria = Categoria::create([
-            'Nombre'=> $request->Nombre
+            'Nombre'=> $request->Nombre,
+            'user_id'=> $request->user_id,
+            'id'=> $request->id
         ]);
+
         if (!$categoria){
             $data = [
                 'message' => 'error al crear el categoria ',

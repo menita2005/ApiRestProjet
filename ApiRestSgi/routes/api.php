@@ -7,11 +7,12 @@ use App\Http\Controllers\Api\ProveedorController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\VentaController;
 use App\Http\Controllers\Api\CompraController;
+use App\Http\Controllers\Api\UserController;
+
+// User
+Route::post('/user', [UserController::class, 'login']);
+
 // Producto
-
-
-
-
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::get('/productos/{id}', [ProductoController::class, 'show']);
 Route::post('/productos', [ProductoController::class, 'store']);

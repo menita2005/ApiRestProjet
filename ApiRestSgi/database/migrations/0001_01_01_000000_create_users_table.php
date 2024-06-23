@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('password_app');
             $table->string('usertype')->default('Encargado'); // Añadir columna role
             $table->boolean('status')->default(true); // Añadir columna status
             $table->rememberToken();

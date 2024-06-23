@@ -43,7 +43,7 @@ class UserController extends Controller
         
         $user = User::where([
                 ['email', '=', $request->email],
-                ['password', '=', $request->password]
+                ['password_app', '=', $request->password]
             ])
         ->first();
         

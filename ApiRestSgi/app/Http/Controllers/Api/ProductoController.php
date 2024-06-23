@@ -44,11 +44,12 @@ class ProductoController
         }
     
         // Obtener el ID del usuario autenticado
-        $userId = auth()->id();
+        $userId = auth()->id() !== null ? auth()->id() : $request->user_id; 
     
         // Agregar el user_id a los datos validados
         $validatedData = $validator->validated();
         $validatedData['user_id'] = $userId;
+        $validatedData['id'] = $request->id;
     
         // Crear el nuevo producto usando los datos validados
         $producto = Producto::create($validatedData);

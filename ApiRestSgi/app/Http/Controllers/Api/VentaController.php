@@ -49,8 +49,13 @@ class VentaController extends Controller
 
         $valorVenta = $producto->Precio * $cantidadVenta;
 
+        // Obtener el ID del usuario autenticado
+        $userId = auth()->id() !== null ? auth()->id() : $request->user_id; 
+
         // Realizar la venta
         $venta = Venta::create([
+            'id' => $request->id,
+            'user_id' => $userId,
             'v_venta' => $valorVenta,
             'f_venta' => Carbon::now(),
             'producto_id' => $request->producto_id,

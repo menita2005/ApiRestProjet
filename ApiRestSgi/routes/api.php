@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\CompraController;
 use App\Http\Controllers\Api\UserController;
 
 // User
-Route::post('/user', [UserController::class, 'login']);
+Route::post('/user/login', [UserController::class, 'login']);
 
 // Producto
 Route::get('/productos', [ProductoController::class, 'index']);

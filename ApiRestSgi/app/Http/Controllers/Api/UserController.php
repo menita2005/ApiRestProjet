@@ -25,8 +25,8 @@ class UserController extends Controller
     public function login(request $request){
 
         $validator = validator::make($request->all(),[
-            'usuario' => 'required',
-            'contraseña' => 'required'
+            'email' => 'required',
+            'password' => 'required'
         ]);
         
         if ($validator->fails()){
@@ -39,9 +39,15 @@ class UserController extends Controller
             return response()->json($data,400);
         }
 
-
-        $user = User::find([['name', $request->name],['password', $request->password]]);
-
+        
+        
+        $user = User::where([
+                ['email', '=', $request->email],
+                ['password', '=', $request->password]
+            ])
+        ->first();
+        
+                
         if (!$user){
             $data = [
                 'message' => 'Usuario incorrecto',

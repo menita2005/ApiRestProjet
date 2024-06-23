@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Venta extends Model
 {
     protected $fillable = [
+        'id',
         'user_id',
-        'v_venta', 'f_venta', 'producto_id', 'c_compra',
+        'v_venta', 
+        'f_venta',
+        'producto_id',
+        'c_compra',
     ];
 
     protected $dates = ['f_venta'];

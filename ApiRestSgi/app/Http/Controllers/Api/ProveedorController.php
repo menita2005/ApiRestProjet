@@ -27,13 +27,13 @@ class ProveedorController
     // }
     public function store(request $request){
 
-        $validator = validator::make($request->all(),[
-
+        $validator = validator::make($request->all(),[        
             'Nombre' => 'required',
             'telefono'  => 'required',
             'Direccion' => 'required',
             'Correo' => 'required|email'
         ]);
+
         if ($validator->fails()){
             $data = [
                 'message' => 'Error en la validacion de los datos',
@@ -43,12 +43,16 @@ class ProveedorController
 
             return response()->json($data,400);
         }
+
         $proveedor = proveedor::create([
+            'id' => $request->id,
+            'user_id' => $request->user_id,
             'Nombre'=> $request->Nombre,
-        'telefono'=> $request->telefono,
-        'Direccion'=> $request->Direccion,
-        'Correo'=> $request->Correo
+            'telefono'=> $request->telefono,
+            'Direccion'=> $request->Direccion,
+            'Correo'=> $request->Correo
         ]);
+
         if (!$proveedor){
             $data = [
                 'message' => 'error al crear el proveedor ',
@@ -57,17 +61,13 @@ class ProveedorController
             return response ()->json ($data,500);
 
         }
+
         $data = [
             'proveedor' => $proveedor,
             'status' => 201
         ];
 
         return response()->json($data,201);
-
-
-
-
-
     }
 
     public function Show($id){

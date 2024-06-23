@@ -27,11 +27,10 @@ class CompraController extends Controller
     {
         // Validar los datos entrantes de la solicitud
         $validator = Validator::make($request->all(), [
-            'proveedor_id' => 'required|exists:proveedores,id',
+            'proveedor_id' => 'required|exists:proveedors,id',
             'producto_id' => 'required|exists:productos,id',
             'c_compra' => 'required|integer|min:1',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Error en la validación de los datos',
@@ -39,53 +38,54 @@ class CompraController extends Controller
                 'status' => 400
             ], 400);
         }
-
+            
         // Obtener el ID del usuario autenticado
-        $userId = auth()->id();
-
+        $userId = auth()->id() !== null ? auth()->id() : $request->user_id;        
+                
         // Obtener el producto seleccionado
         $producto = Producto::find($request->producto_id);
-
+        
         if (!$producto) {
             return response()->json([
                 'message' => 'Producto no encontrado',
                 'status' => 404
             ], 404);
         }
-
+        
         // Calcular el valor de la compra
-        $valorCompra = $producto->precio * $request->c_compra;
-
+        $valorCompra = $producto->Precio * $request->c_compra;
+        
         // Crear la nueva compra usando los datos validados y la fecha actual
         $compra = Compra::create([
-            'user_id' => $userId,
+            'id' => $request->id,
+            'user_id' =>  $userId,
             'proveedor_id' => $request->proveedor_id,
             'producto_id' => $request->producto_id,
             'c_compra' => $request->c_compra,
             'v_compra' => $valorCompra,
             'f_compra' => now(), // Fecha actual
         ]);
-
+        
         if (!$compra) {
             return response()->json([
                 'message' => 'Error al crear la compra',
                 'status' => 500
             ], 500);
         }
-
+        
         // Actualizar la cantidad del producto en la base de datos
         $producto->update([
             'stock' => $producto->stock + $request->c_compra,
         ]);
-
+        
         // Cargar las relaciones de proveedor y producto en la compra creada
         $compra->load(['proveedor', 'producto']);
-
+        
         return response()->json([
             'message' => 'Compra creada exitosamente',
             'compra' => $compra,
             'status' => 201
-        ], 201);
+        ], 201);        
     }
 
     public function show($id)
@@ -117,13 +117,12 @@ class CompraController extends Controller
                 'status' => 404
             ], 404);
         }
-
         // Validar los datos entrantes de la solicitud
         $validator = Validator::make($request->all(), [
-            'proveedor_id' => 'required|exists:proveedores,id',
+            'proveedor_id' => 'required|exists:proveedors,id',
             'producto_id' => 'required|exists:productos,id',
             'c_compra' => 'required|integer|min:1',
-        ]);
+        ]);        
 
         if ($validator->fails()) {
             return response()->json([

@@ -10,6 +10,7 @@ class Compra extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'user_id',
         'v_compra',
         'f_compra',
